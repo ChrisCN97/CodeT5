@@ -5,6 +5,7 @@ from transformers import (RobertaConfig, RobertaModel, RobertaTokenizer,
                           BartConfig, BartForConditionalGeneration, BartTokenizer,
                           T5Config, T5ForConditionalGeneration, T5Tokenizer)
 import logging
+from ptuning import Prompt
 
 logger = logging.getLogger(__name__)
 
@@ -199,6 +200,7 @@ class Seq2Seq(nn.Module):
 
     def __init__(self, encoder, decoder, config, beam_size=None, max_length=None, sos_id=None, eos_id=None):
         super(Seq2Seq, self).__init__()
+        self.prompt = Prompt(config.hidden_size)
         self.encoder = encoder
         self.decoder = decoder
         self.config = config
@@ -229,7 +231,11 @@ class Seq2Seq(nn.Module):
                                    self.encoder.embeddings.word_embeddings)
 
     def forward(self, source_ids=None, source_mask=None, target_ids=None, target_mask=None, args=None):
-        outputs = self.encoder(source_ids, attention_mask=source_mask)
+        inputs_embeds = self.prompt.replace_prompt_vector_into_inputs(
+            source_ids,
+            self.encoder.embeddings.word_embeddings
+        )  # todo cuinan: prompt
+        outputs = self.encoder(source_ids, attention_mask=source_mask, inputs_embeds=inputs_embeds)
         encoder_output = outputs[0].permute([1, 0, 2]).contiguous()
         if target_ids is not None:
             attn_mask = -1e4 * (1 - self.bias[:target_ids.shape[1], :target_ids.shape[1]])

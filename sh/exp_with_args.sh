@@ -1,4 +1,4 @@
-WORKDIR="your_CodeT5_path/CodeT5"
+WORKDIR="/mnt/sda/cn/codet5"
 export PYTHONPATH=$WORKDIR
 
 TASK=${1}

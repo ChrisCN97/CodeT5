@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="lab1405new">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/mnt/sda/cn/codet5" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="user@202.120.40.28:1358 agent">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/mnt/sda/cn/codet5" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

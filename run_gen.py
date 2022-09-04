@@ -29,7 +29,7 @@ import multiprocessing
 import time
 
 import torch
-from torch.utils.tensorboard import SummaryWriter
+# from torch.utils.tensorboard import SummaryWriter
 from torch.utils.data import DataLoader, SequentialSampler, RandomSampler
 from torch.utils.data.distributed import DistributedSampler
 from transformers import AdamW, get_linear_schedule_with_warmup
@@ -182,9 +182,9 @@ def main():
     fa = open(os.path.join(args.output_dir, 'summary.log'), 'a+')
 
     if args.do_train:
-        if args.local_rank in [-1, 0] and args.data_num == -1:
-            summary_fn = '{}/{}'.format(args.summary_dir, '/'.join(args.output_dir.split('/')[1:]))
-            tb_writer = SummaryWriter(summary_fn)
+        # if args.local_rank in [-1, 0] and args.data_num == -1:
+        #     summary_fn = '{}/{}'.format(args.summary_dir, '/'.join(args.output_dir.split('/')[1:]))
+        #     tb_writer = SummaryWriter(summary_fn)
 
         # Prepare training data loader
         train_examples, train_data = load_and_cache_gen_data(args, args.train_filename, pool, tokenizer, 'train')
@@ -267,8 +267,8 @@ def main():
                 for key in sorted(result.keys()):
                     logger.info("  %s = %s", key, str(result[key]))
                 logger.info("  " + "*" * 20)
-                if args.data_num == -1:
-                    tb_writer.add_scalar('dev_ppl', eval_ppl, cur_epoch)
+                # if args.data_num == -1:
+                #     tb_writer.add_scalar('dev_ppl', eval_ppl, cur_epoch)
 
                 # save last checkpoint
                 if args.save_last_checkpoints:
@@ -319,8 +319,8 @@ def main():
                         dev_bleu_em = dev_em
                     else:
                         dev_bleu_em = dev_bleu + dev_em
-                    if args.data_num == -1:
-                        tb_writer.add_scalar('dev_bleu_em', dev_bleu_em, cur_epoch)
+                    # if args.data_num == -1:
+                    #     tb_writer.add_scalar('dev_bleu_em', dev_bleu_em, cur_epoch)
                         # tb_writer.add_scalar('dev_em', dev_em, cur_epoch)
                     if dev_bleu_em > best_bleu_em:
                         not_bleu_em_inc_cnt = 0
@@ -354,8 +354,8 @@ def main():
             logger.info("***** CUDA.empty_cache() *****")
             torch.cuda.empty_cache()
 
-        if args.local_rank in [-1, 0] and args.data_num == -1:
-            tb_writer.close()
+        # if args.local_rank in [-1, 0] and args.data_num == -1:
+        #     tb_writer.close()
         logger.info("Finish training and take %s", get_elapse_time(t0))
 
     if args.do_test:
