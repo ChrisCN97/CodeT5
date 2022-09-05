@@ -1,6 +1,7 @@
 # 1. insert prompt to dataset
 # 2. prompt vector through LSTM
 # 3. replace prompt vector to dataset input
+
 import torch
 from torch import nn
 
