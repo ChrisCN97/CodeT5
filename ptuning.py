@@ -6,13 +6,15 @@ import torch
 from torch import nn
 
 use_ptuning = True
+use_T5 = True
 
-prompt_id = 99999
+prompt_id = 50
 prompt_len = 5
 
+prompt_str = " ".join(["<prompt"+str(i)+">" for i in range(prompt_len)])
 
 def add_prompt_into_ids(all_source_ids):
-    if not use_ptuning:
+    if not use_ptuning or use_T5:
         return all_source_ids
     num = all_source_ids.shape[0]
     prompt_ids = torch.full((num, prompt_len), prompt_id)
@@ -52,3 +54,13 @@ class Prompt(torch.nn.Module):
             for i in range(self.prompt_length):
                 raw_embeds[bidx, i, :] = replace_embeds[i, :]
         return raw_embeds
+
+def add_prompt_for_t5(model, tokenizer):
+    prompt_tokens = ["<prompt"+str(i)+">" for i in range(prompt_len)]
+    tokenizer.add_tokens(list(prompt_tokens))
+    model.resize_token_embeddings(len(tokenizer))
+
+def add_prompt_to_str_for_t5(str):
+    if not use_ptuning or not use_T5:
+        return str
+    return prompt_str + str

@@ -1,5 +1,5 @@
 import json
-
+from ptuning import add_prompt_to_str_for_t5
 
 def add_lang_by_task(target_str, task, sub_task):
     if task == 'summarize':
@@ -30,6 +30,7 @@ def convert_examples_to_features(item):
         source_str = example.source
 
     source_str = source_str.replace('</s>', '<unk>')
+    source_str = add_prompt_to_str_for_t5(source_str)
     source_ids = tokenizer.encode(source_str, max_length=args.max_source_length, padding='max_length', truncation=True)
     assert source_ids.count(tokenizer.eos_token_id) == 1
     if stage == 'test':

@@ -99,6 +99,10 @@ def get_args_by_task_model(task, sub_task, model_tag):
 
 def run_one_exp(args):
     bs, lr, src_len, trg_len, patience, epoch = get_args_by_task_model(args.task, args.sub_task, args.model_tag)
+    if args.epoch != 0:
+        epoch = args.epoch
+    if args.batch_size != 0:
+        bs = args.batch_size
     print('============================Start Running==========================')
     cmd_str = get_cmd(task=args.task, sub_task=args.sub_task, model_tag=args.model_tag, gpu=args.gpu,
                       data_num=args.data_num, bs=bs, lr=lr, source_length=src_len, target_length=trg_len,
@@ -153,6 +157,8 @@ if __name__ == '__main__':
     parser.add_argument("--summary_dir", type=str, default='tensorboard', help='directory to save tensorboard summary')
     parser.add_argument("--data_num", type=int, default=-1, help='number of data instances to use, -1 for full data')
     parser.add_argument("--gpu", type=int, default=0, help='index of the gpu to use in a cluster')
+    parser.add_argument("--epoch", type=int, default=0, help='epoch num')
+    parser.add_argument("--batch_size", type=int, default=0, help='batch size')
     args = parser.parse_args()
 
     if not os.path.exists(args.res_dir):

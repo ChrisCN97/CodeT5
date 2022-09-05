@@ -5,7 +5,7 @@ from transformers import (RobertaConfig, RobertaModel, RobertaTokenizer,
                           BartConfig, BartForConditionalGeneration, BartTokenizer,
                           T5Config, T5ForConditionalGeneration, T5Tokenizer)
 import logging
-from ptuning import Prompt
+from ptuning import Prompt, add_prompt_for_t5
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ def build_or_load_gen_model(args):
                         sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id)
     else:
         model = model_class.from_pretrained(args.model_name_or_path)
+        add_prompt_for_t5(model, tokenizer)
 
     logger.info("Finish loading model [%s] from %s", get_model_size(model), args.model_name_or_path)
 
@@ -201,6 +202,7 @@ class Seq2Seq(nn.Module):
     def __init__(self, encoder, decoder, config, beam_size=None, max_length=None, sos_id=None, eos_id=None):
         super(Seq2Seq, self).__init__()
         self.prompt = Prompt(config.hidden_size)
+        self.prompt.cuda()
         self.encoder = encoder
         self.decoder = decoder
         self.config = config
@@ -235,7 +237,10 @@ class Seq2Seq(nn.Module):
             source_ids,
             self.encoder.embeddings.word_embeddings
         )  # todo cuinan: prompt
-        outputs = self.encoder(source_ids, attention_mask=source_mask, inputs_embeds=inputs_embeds)
+        if inputs_embeds == None:
+            outputs = self.encoder(source_ids, attention_mask=source_mask)
+        else:
+            outputs = self.encoder(attention_mask=source_mask, inputs_embeds=inputs_embeds)
         encoder_output = outputs[0].permute([1, 0, 2]).contiguous()
         if target_ids is not None:
             attn_mask = -1e4 * (1 - self.bias[:target_ids.shape[1], :target_ids.shape[1]])
