@@ -4,11 +4,12 @@ import argparse
 
 
 def get_cmd(task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch, warmup,
-            model_dir, summary_dir, res_fn, max_steps=None, save_steps=None, log_steps=None):
+            model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num,
+            max_steps=None, save_steps=None, log_steps=None):
     if max_steps is None:
-        cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s' % \
+        cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %s %s %d' % \
                   (task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch,
-                   warmup, model_dir, summary_dir, res_fn)
+                   warmup, model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num)
     else:
         cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %d %d %d' % \
                   (task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch,
@@ -108,6 +109,7 @@ def run_one_exp(args):
                       data_num=args.data_num, bs=bs, lr=lr, source_length=src_len, target_length=trg_len,
                       patience=patience, epoch=epoch, warmup=1000,
                       model_dir=args.model_dir, summary_dir=args.summary_dir,
+                      train_lang=args.train_lang, test_lang=args.test_lang, prompt_num=args.prompt_num,
                       res_fn='{}/{}_{}.txt'.format(args.res_dir, args.task, args.model_tag))
     print('%s\n' % cmd_str)
     os.system(cmd_str)
@@ -159,12 +161,20 @@ if __name__ == '__main__':
     parser.add_argument("--gpu", type=int, default=0, help='index of the gpu to use in a cluster')
     parser.add_argument("--epoch", type=int, default=0, help='epoch num')
     parser.add_argument("--batch_size", type=int, default=0, help='batch size')
+
+    parser.add_argument("--train_lang", type=str, default='')
+    parser.add_argument("--test_lang", type=str, default='')
+    parser.add_argument("--prompt_num", type=int, default=0)
+
     args = parser.parse_args()
 
     if not os.path.exists(args.res_dir):
         os.makedirs(args.res_dir)
 
+    if args.sub_task == "":
+        args.sub_task = args.train_lang
     assert args.sub_task in get_sub_tasks(args.task)
+
     if args.task != 'multi_task':
         run_one_exp(args)
     else:

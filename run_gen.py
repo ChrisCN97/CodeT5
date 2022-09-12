@@ -37,7 +37,7 @@ from models import build_or_load_gen_model
 from evaluator import smooth_bleu
 from evaluator.CodeBLEU import calc_code_bleu
 from evaluator.bleu import _bleu
-from utils import get_filenames, get_elapse_time, load_and_cache_gen_data
+from utils import get_summarize_filenames, get_elapse_time, load_and_cache_gen_data
 from configs import add_args, set_seed, set_dist
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -178,7 +178,7 @@ def main():
         # for DataParallel
         model = torch.nn.DataParallel(model)
     pool = multiprocessing.Pool(args.cpu_cont)
-    args.train_filename, args.dev_filename, args.test_filename = get_filenames(args.data_dir, args.task, args.sub_task)
+    args.train_filename, args.dev_filename, args.test_filename = get_summarize_filenames(args)
     fa = open(os.path.join(args.output_dir, 'summary.log'), 'a+')
 
     if args.do_train:

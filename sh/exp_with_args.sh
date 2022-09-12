@@ -16,6 +16,9 @@ WARMUP=${12}
 MODEL_DIR=${13}
 SUMMARY_DIR=${14}
 RES_FN=${15}
+train_lang=${16}
+test_lang=${17}
+prompt_num=${18}
 
 if [[ $DATA_NUM == -1 ]]; then
   DATA_TAG='all'
@@ -26,7 +29,7 @@ fi
 if [[ ${TASK} == 'multi_task' ]]; then
   FULL_MODEL_TAG=${MODEL_TAG}_${DATA_TAG}_lr${LR}_s${16}
 else
-  FULL_MODEL_TAG=${MODEL_TAG}_${DATA_TAG}_lr${LR}_bs${BS}_src${SRC_LEN}_trg${TRG_LEN}_pat${PATIENCE}_e${EPOCH}
+  FULL_MODEL_TAG=${MODEL_TAG}_${DATA_TAG}_e${EPOCH}_tl${train_lang}_tl${test_lang}_p${prompt_num}
 fi
 
 
@@ -83,11 +86,12 @@ fi
 
 CUDA_VISIBLE_DEVICES=${GPU} \
   python ${RUN_FN}  ${MULTI_TASK_AUG}   \
-  --do_train --do_eval --do_test  \
+  --do_train --do_eval --do_eval_bleu --do_test  \
   --task ${TASK} --sub_task ${SUB_TASK} --model_type ${MODEL_TYPE} --data_num ${DATA_NUM}  \
   --num_train_epochs ${EPOCH} --warmup_steps ${WARMUP} --learning_rate ${LR}e-5 --patience ${PATIENCE} \
   --tokenizer_name=${TOKENIZER}  --model_name_or_path=${MODEL_PATH} --data_dir ${WORKDIR}/data  \
   --cache_path ${CACHE_DIR}  --output_dir ${OUTPUT_DIR}  --summary_dir ${SUMMARY_DIR} \
   --save_last_checkpoints --always_save_model --res_dir ${RES_DIR} --res_fn ${RES_FN} \
   --train_batch_size ${BS} --eval_batch_size ${BS} --max_source_length ${SRC_LEN} --max_target_length ${TRG_LEN} \
+  --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} \
   2>&1 | tee ${LOG}

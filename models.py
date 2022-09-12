@@ -31,10 +31,10 @@ def build_or_load_gen_model(args):
         decoder = nn.TransformerDecoder(decoder_layer, num_layers=6)
         model = Seq2Seq(encoder=encoder, decoder=decoder, config=config,
                         beam_size=args.beam_size, max_length=args.max_target_length,
-                        sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id)
+                        sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id, prompt_num=args.prompt_num)
     else:
         model = model_class.from_pretrained(args.model_name_or_path)
-        add_prompt_for_t5(model, tokenizer)
+        add_prompt_for_t5(args, model, tokenizer) # todo cuinan: add prompt into t5
 
     logger.info("Finish loading model [%s] from %s", get_model_size(model), args.model_name_or_path)
 
@@ -199,9 +199,9 @@ class Seq2Seq(nn.Module):
         * `eos_id`- end of symbol ids in target for beam search.
     """
 
-    def __init__(self, encoder, decoder, config, beam_size=None, max_length=None, sos_id=None, eos_id=None):
+    def __init__(self, encoder, decoder, config, beam_size=None, max_length=None, sos_id=None, eos_id=None, prompt_num=None):
         super(Seq2Seq, self).__init__()
-        self.prompt = Prompt(config.hidden_size)
+        self.prompt = Prompt(prompt_num, config.hidden_size)
         self.prompt.cuda()
         self.encoder = encoder
         self.decoder = decoder

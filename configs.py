@@ -97,6 +97,11 @@ def add_args(parser):
                         help="For distributed training: local_rank")
     parser.add_argument('--seed', type=int, default=1234,
                         help="random seed for initialization")
+
+    parser.add_argument("--train_lang", type=str, default='')
+    parser.add_argument("--test_lang", type=str, default='')
+    parser.add_argument("--prompt_num", type=int, default=0)
+
     args = parser.parse_args()
 
     if args.task in ['summarize']:
