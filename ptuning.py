@@ -56,11 +56,13 @@ def add_prompt_for_t5(args, model, tokenizer):
     if args.prompt_num == 0:
         return
     prompt_tokens = ["<prompt"+str(i)+">" for i in range(args.prompt_num)]
-    tokenizer.add_tokens(list(prompt_tokens))
+    special_tokens_dict = {'additional_special_tokens': prompt_tokens}
+    add_num = tokenizer.add_special_tokens(special_tokens_dict)
     model.resize_token_embeddings(len(tokenizer))
+    return add_num
 
-def add_prompt_to_str_for_t5(args, str):
+def add_prompt_to_str_for_t5(args, s):
     if args.prompt_num == 0 or args.model_type != "codet5":
-        return str
+        return s
     prompt_str = " ".join(["<prompt" + str(i) + ">" for i in range(args.prompt_num)])
-    return prompt_str + str
+    return prompt_str + " " + s

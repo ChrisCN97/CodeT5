@@ -4,12 +4,12 @@ import argparse
 
 
 def get_cmd(task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch, warmup,
-            model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num,
+            model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train,
             max_steps=None, save_steps=None, log_steps=None):
     if max_steps is None:
-        cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %s %s %d' % \
+        cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %s %s %d %s' % \
                   (task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch,
-                   warmup, model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num)
+                   warmup, model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train)
     else:
         cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %d %d %d' % \
                   (task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch,
@@ -110,6 +110,7 @@ def run_one_exp(args):
                       patience=patience, epoch=epoch, warmup=1000,
                       model_dir=args.model_dir, summary_dir=args.summary_dir,
                       train_lang=args.train_lang, test_lang=args.test_lang, prompt_num=args.prompt_num,
+                      need_train=args.need_train,
                       res_fn='{}/{}_{}.txt'.format(args.res_dir, args.task, args.model_tag))
     print('%s\n' % cmd_str)
     os.system(cmd_str)
@@ -165,6 +166,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_lang", type=str, default='')
     parser.add_argument("--test_lang", type=str, default='')
     parser.add_argument("--prompt_num", type=int, default=0)
+    parser.add_argument("--need_train", action='store_true')
 
     args = parser.parse_args()
 
