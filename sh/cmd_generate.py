@@ -10,12 +10,15 @@ class Task:
                  prompt_num,
                  epoch,
                  batch_size,
-                 need_train):
+                 need_train,
+                 freeze=False,
+                 model_dir="model"):
         self.model = model
         self.task = task
         self.train_lang = train_lang
         self.test_lang = test_lang
         self.prompt_num = prompt_num
+        self.model_dir = model_dir
         self.epoch = epoch
         self.batch_size = batch_size
         if data_num == "test":
@@ -23,6 +26,10 @@ class Task:
             self.epoch = 2
         self.data_num = data_num
         self.need_train = need_train
+        if freeze:
+            self.freeze = 1
+        else:
+            self.freeze = 0
 
     def decide_gpu(self, id):
         self.gpu = id
@@ -46,12 +53,14 @@ class Task:
         cmd += " --data_num {}".format(self.data_num)
         cmd += " --test_lang {}".format(self.test_lang)
         cmd += " --prompt_num {}".format(self.prompt_num)
-        cmd += " --model_dir model --res_dir res --summary_dir res"
+        cmd += " --model_dir {}".format(self.model_dir)
+        cmd += " --res_dir res --summary_dir res"
         cmd += " --epoch {}".format(self.epoch)
         cmd += " --batch_size {}".format(self.batch_size)
         cmd += " --gpu {}".format(self.gpu)
         if self.need_train:
             cmd += " --need_train"
+        cmd += " --freeze {}".format(self.freeze)
         return cmd
 
 
@@ -126,21 +135,40 @@ class TaskList:
 if __name__ == "__main__":
     model_list = ["codebert", "codet5_base"]
     sum_langs = ["java", "python", "go", "ruby", "javascript", "php"]
-    test_langs = ["go", "ruby", "javascript", "php"]
+    test_langs = ["java", "python", "go", "ruby", "javascript", "php"]
     size = [5000]
     prompt_num_list = [5, 0]
     gpu_num = 2
 
-    task_list = TaskList(gpu_num, use_gpu=0)
+    task_list = TaskList(gpu_num, use_gpu=1)  # 0, 1
+    model = model_list[1]
+    data_num = 40
+    freeze = False
+    epoch = 5
 
-    # task_list.add_task(
-    #     Task(model=model_list[1], task="summarize", train_lang="java", data_num=5000, test_lang="java",
-    #          prompt_num=5, epoch=10, batch_size=20, need_train=True))
-    for test_lang in test_langs:
+    for prompt_num in [5, 0]:
+        data_num = 40
         task_list.add_task(
-            Task(model=model_list[1], task="summarize", train_lang="java", data_num=1000, test_lang=test_lang,
-                 prompt_num=15, epoch=10, batch_size=20, need_train=False))
+            Task(model=model, task="summarize", train_lang="java", data_num=data_num, test_lang="java",
+                 prompt_num=prompt_num, epoch=epoch, batch_size=20, need_train=True, freeze=freeze, model_dir="model2"))
+        for test_lang in test_langs:
+            task_list.add_task(
+                Task(model=model, task="summarize", train_lang="java", data_num=data_num, test_lang=test_lang,
+                     prompt_num=prompt_num, epoch=epoch, batch_size=20, need_train=False, freeze=freeze, model_dir="model2"))
+    for train_lang in ["ruby", "php"]:
+        for prompt_num in [10, 0]:
+            data_num = 1000
+            epoch = 10
+            task_list.add_task(
+                Task(model=model, task="summarize", train_lang=train_lang, data_num=data_num, test_lang=train_lang,
+                     prompt_num=prompt_num, epoch=epoch, batch_size=20, need_train=True, freeze=freeze,
+                     model_dir="model2"))
+            for test_lang in test_langs:
+                task_list.add_task(
+                    Task(model=model, task="summarize", train_lang=train_lang, data_num=data_num, test_lang=test_lang,
+                         prompt_num=prompt_num, epoch=epoch, batch_size=20, need_train=False, freeze=freeze,
+                         model_dir="model2"))
     task_list.generate_cmd()
     # Best ppl
     # Finish and take
-    # 873958 873880
+    # 922446

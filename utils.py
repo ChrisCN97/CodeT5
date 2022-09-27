@@ -36,7 +36,7 @@ def load_and_cache_gen_data(args, filename, pool, tokenizer, split_tag, only_src
     # else:
         # logger.info("Create cache data into %s", cache_fn)
     tuple_examples = [(example, idx, tokenizer, args, split_tag) for idx, example in enumerate(examples)]
-    features = pool.map(convert_examples_to_features, tqdm(tuple_examples, total=len(tuple_examples)))
+    features = pool.map(convert_examples_to_features, tqdm(tuple_examples, total=len(tuple_examples)))  # todo cuinan: add prompt str
     all_source_ids = torch.tensor([f.source_ids for f in features], dtype=torch.long)
     all_source_ids = add_prompt_into_ids(args, all_source_ids)  # todo cuinan: prompt
     if split_tag == 'test' or only_src:

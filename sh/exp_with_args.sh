@@ -20,6 +20,7 @@ train_lang=${16}
 test_lang=${17}
 prompt_num=${18}
 need_train=${19}
+freeze=${20}
 
 if [[ $DATA_NUM == -1 ]]; then
   DATA_TAG='all'
@@ -30,7 +31,7 @@ fi
 if [[ ${TASK} == 'multi_task' ]]; then
   FULL_MODEL_TAG=${MODEL_TAG}_${DATA_TAG}_lr${LR}_s${16}
 else
-  FULL_MODEL_TAG=${MODEL_TAG}_${DATA_TAG}_e${EPOCH}_bs${BS}_tl${train_lang}_p${prompt_num}
+  FULL_MODEL_TAG=${MODEL_TAG}_${DATA_TAG}_e${EPOCH}_bs${BS}_tl${train_lang}_p${prompt_num}_f${freeze}
 fi
 
 
@@ -95,7 +96,7 @@ if [[ ${need_train} == 'True' ]]; then
     --cache_path ${CACHE_DIR}  --output_dir ${OUTPUT_DIR}  --summary_dir ${SUMMARY_DIR} \
     --save_last_checkpoints --always_save_model --res_dir ${RES_DIR} --res_fn ${RES_FN} \
     --train_batch_size ${BS} --eval_batch_size ${BS} --max_source_length ${SRC_LEN} --max_target_length ${TRG_LEN} \
-    --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} \
+    --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} --freeze ${freeze} \
     2>&1 | tee ${LOG}
 else
   CUDA_VISIBLE_DEVICES=${GPU} \
@@ -107,6 +108,6 @@ else
     --cache_path ${CACHE_DIR}  --output_dir ${OUTPUT_DIR}  --summary_dir ${SUMMARY_DIR} \
     --save_last_checkpoints --always_save_model --res_dir ${RES_DIR} --res_fn ${RES_FN} \
     --train_batch_size ${BS} --eval_batch_size ${BS} --max_source_length ${SRC_LEN} --max_target_length ${TRG_LEN} \
-    --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} \
+    --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} --freeze ${freeze} \
     2>&1 | tee ${LOG}
 fi

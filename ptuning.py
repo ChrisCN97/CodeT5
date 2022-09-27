@@ -54,7 +54,7 @@ class Prompt(torch.nn.Module):
 
 def add_prompt_for_t5(args, model, tokenizer):
     if args.prompt_num == 0:
-        return
+        return 0
     prompt_tokens = ["<prompt"+str(i)+">" for i in range(args.prompt_num)]
     special_tokens_dict = {'additional_special_tokens': prompt_tokens}
     add_num = tokenizer.add_special_tokens(special_tokens_dict)
