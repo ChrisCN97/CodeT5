@@ -174,9 +174,9 @@ if __name__ == '__main__':
     if not os.path.exists(args.res_dir):
         os.makedirs(args.res_dir)
 
-    if args.sub_task == "":
-        args.sub_task = args.train_lang
-    assert args.sub_task in get_sub_tasks(args.task)
+    # if args.sub_task == "":
+    #     args.sub_task = args.train_lang
+    # assert args.sub_task in get_sub_tasks(args.task)
 
     if args.task != 'multi_task':
         run_one_exp(args)

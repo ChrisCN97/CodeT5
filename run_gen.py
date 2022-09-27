@@ -37,6 +37,7 @@ from models import build_or_load_gen_model
 from evaluator import smooth_bleu
 from evaluator.CodeBLEU import calc_code_bleu
 from evaluator.bleu import _bleu
+from evaluator.rouge import Rouge
 from utils import get_summarize_filenames, get_elapse_time, load_and_cache_gen_data
 from configs import add_args, set_seed, set_dist
 
@@ -93,6 +94,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
     model.eval()
     pred_ids = []
     bleu, codebleu = 0.0, 0.0
+    rouge_l = 0.0
     for batch in tqdm(eval_dataloader, total=len(eval_dataloader), desc="Eval bleu for {} set".format(split_tag)):
         source_ids = batch[0].to(args.device)
         source_mask = source_ids.ne(tokenizer.pad_token_id)
@@ -148,12 +150,18 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
         if args.task == 'summarize':
             (goldMap, predictionMap) = smooth_bleu.computeMaps(predictions, gold_fn)
             bleu = round(smooth_bleu.bleuFromMaps(goldMap, predictionMap)[0], 2)
+            # compute rouge
+            # logger.info(" goldMap: %s predictMap: %s\n", goldMap.keys(), predictionMap.keys())
+            rouge_calculator = Rouge()
+            rouge_l = rouge_calculator.compute_score(goldMap, predictionMap)[0]
+            # logger.info(" rough-l: %.2f, ind_rough: %.2f\n", rouge_l, ind_rouge)
+
         else:
             bleu = round(_bleu(gold_fn, output_fn), 2)
             if args.task in ['concode', 'translate', 'refine']:
                 codebleu = calc_code_bleu.get_codebleu(gold_fn, output_fn, args.lang)
 
-        result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu}
+        result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu, 'rouge-l': rouge_l}
         if args.task == 'concode':
             result['codebleu'] = codebleu * 100
 
@@ -378,6 +386,9 @@ def main():
             result = eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, 'test', criteria)
             test_bleu, test_em = result['bleu'], result['em']
             test_codebleu = result['codebleu'] if 'codebleu' in result else 0
+            # Compute ROUGE scores
+            # rouge_calculator = Rouge()
+            # rouge_l, ind_rouge = rouge_calculator.compute_score(eval_data, eval_examples)
             result_str = "[%s] bleu-4: %.2f, em: %.4f, codebleu: %.4f\n" % (criteria, test_bleu, test_em, test_codebleu)
             logger.info(result_str)
             fa.write(result_str)

@@ -172,10 +172,23 @@ def load_and_cache_multi_gen_data(args, pool, tokenizer, split_tag, only_src=Fal
 
 
 def get_summarize_filenames(args):
-    train_data_dir = '{}/summarize/{}'.format(args.data_dir, args.train_lang)
-    train_fn = '{}/train.jsonl'.format(train_data_dir)
-    dev_fn = '{}/valid.jsonl'.format(train_data_dir)
-    test_fn = '{}/summarize/{}/test.jsonl'.format(args.data_dir, args.test_lang)
+    if args.task == 'summarize':
+        train_data_dir = '{}/summarize/{}'.format(args.data_dir, args.train_lang)
+        train_fn = '{}/train.jsonl'.format(train_data_dir)
+        dev_fn = '{}/valid.jsonl'.format(train_data_dir)
+        test_fn = '{}/summarize/{}/test.jsonl'.format(args.data_dir, args.test_lang)
+    elif args.task == 'translate':
+        data_dir = '{}/translate'.format(args.data_dir)
+        if args.train_lang == 'cs-java':
+            train_fn = '{}/train.java-cs.txt.cs,{}/train.java-cs.txt.java'.format(data_dir, data_dir)
+            dev_fn = '{}/valid.java-cs.txt.cs,{}/valid.java-cs.txt.java'.format(data_dir, data_dir)
+        else:
+            train_fn = '{}/train.java-cs.txt.java,{}/train.java-cs.txt.cs'.format(data_dir, data_dir)
+            dev_fn = '{}/valid.java-cs.txt.java,{}/valid.java-cs.txt.cs'.format(data_dir, data_dir)
+        if args.test_lang == 'cs-java':
+            test_fn = '{}/test.java-cs.txt.cs,{}/test.java-cs.txt.java'.format(data_dir, data_dir)
+        else:
+            test_fn = '{}/test.java-cs.txt.java,{}/test.java-cs.txt.cs'.format(data_dir, data_dir)
     return train_fn, dev_fn, test_fn
 
 def get_filenames(data_root, task, sub_task, split=''):

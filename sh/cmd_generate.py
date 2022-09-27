@@ -139,36 +139,27 @@ if __name__ == "__main__":
     size = [5000]
     prompt_num_list = [5, 0]
     gpu_num = 2
+    tasks = ["summarize", "translate"]
+    translate_langs = ["java-cs", "cs-java"]
 
     task_list = TaskList(gpu_num, use_gpu=1)  # 0, 1
     model = model_list[1]
     data_num = 40
     freeze = False
-    epoch = 5
-
-    for prompt_num in [5, 0]:
-        data_num = 40
-        task_list.add_task(
-            Task(model=model, task="summarize", train_lang="java", data_num=data_num, test_lang="java",
-                 prompt_num=prompt_num, epoch=epoch, batch_size=20, need_train=True, freeze=freeze, model_dir="model2"))
-        for test_lang in test_langs:
+    epoch = 10
+    for freeze in [False, True]:
+        for prompt in [10, 0]:
             task_list.add_task(
-                Task(model=model, task="summarize", train_lang="java", data_num=data_num, test_lang=test_lang,
-                     prompt_num=prompt_num, epoch=epoch, batch_size=20, need_train=False, freeze=freeze, model_dir="model2"))
-    for train_lang in ["ruby", "php"]:
-        for prompt_num in [10, 0]:
-            data_num = 1000
-            epoch = 10
-            task_list.add_task(
-                Task(model=model, task="summarize", train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-                     prompt_num=prompt_num, epoch=epoch, batch_size=20, need_train=True, freeze=freeze,
+                Task(model=model, task=tasks[1], train_lang=translate_langs[0], data_num=1000,
+                     test_lang=translate_langs[0],
+                     prompt_num=prompt, epoch=epoch, batch_size=5, need_train=True, freeze=freeze,
                      model_dir="model2"))
-            for test_lang in test_langs:
-                task_list.add_task(
-                    Task(model=model, task="summarize", train_lang=train_lang, data_num=data_num, test_lang=test_lang,
-                         prompt_num=prompt_num, epoch=epoch, batch_size=20, need_train=False, freeze=freeze,
-                         model_dir="model2"))
+            task_list.add_task(
+                Task(model=model, task=tasks[1], train_lang=translate_langs[0], data_num=1000,
+                     test_lang=translate_langs[1],
+                     prompt_num=prompt, epoch=epoch, batch_size=5, need_train=False, freeze=freeze,
+                     model_dir="model2"))
     task_list.generate_cmd()
     # Best ppl
     # Finish and take
-    # 922446
+    # 973386
