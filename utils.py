@@ -189,6 +189,16 @@ def get_summarize_filenames(args):
             test_fn = '{}/test.java-cs.txt.cs,{}/test.java-cs.txt.java'.format(data_dir, data_dir)
         else:
             test_fn = '{}/test.java-cs.txt.java,{}/test.java-cs.txt.cs'.format(data_dir, data_dir)
+    elif args.task == 'concode':
+        data_dir = '{}/{}'.format(args.data_dir, args.task)
+        train_fn = '{}/train.json'.format(data_dir)
+        dev_fn = '{}/dev.json'.format(data_dir)
+        test_fn = '{}/test.json'.format(data_dir)
+    elif args.task == 'refine':
+        data_dir = '{}/{}/{}'.format(args.data_dir, args.task, args.train_lang)
+        train_fn = '{}/train.buggy-fixed.buggy,{}/train.buggy-fixed.fixed'.format(data_dir, data_dir)
+        dev_fn = '{}/valid.buggy-fixed.buggy,{}/valid.buggy-fixed.fixed'.format(data_dir, data_dir)
+        test_fn = '{}/test.buggy-fixed.buggy,{}/test.buggy-fixed.fixed'.format(data_dir, data_dir)
     return train_fn, dev_fn, test_fn
 
 def get_filenames(data_root, task, sub_task, split=''):

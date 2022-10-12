@@ -17,7 +17,7 @@ def get_cmd(task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, tar
     return cmd_str
 
 
-def get_args_by_task_model(task, sub_task, model_tag):
+def get_args_by_task_model(task, sub_task, model_tag, train_lang):
     if task == 'translate':
         # java-cs: Read 10300 examples, avg src len: 13, avg trg len: 15, max src len: 136, max trg len: 118
         # [TOKENIZE] avg src len: 45, avg trg len: 56, max src len: 391, max trg len: 404
@@ -41,10 +41,10 @@ def get_args_by_task_model(task, sub_task, model_tag):
         # [TOKENIZE] avg src len: 50, avg trg len: 45, max src len: 129, max trg len: 121
         # medium:  Read 52364 examples, avg src len: 74, avg trg len: 73, max src len: 100, max trg len: 100
         # [TOKENIZE] avg src len: 117, avg trg len: 114, max src len: 238, max trg len: 238
-        if sub_task == 'small':
+        if train_lang == 'small':
             src_len = 130
             trg_len = 120
-        elif sub_task == 'medium':
+        elif train_lang == 'medium':
             src_len = 240
             trg_len = 240
         epoch = 50
@@ -99,7 +99,7 @@ def get_args_by_task_model(task, sub_task, model_tag):
 
 
 def run_one_exp(args):
-    bs, lr, src_len, trg_len, patience, epoch = get_args_by_task_model(args.task, args.sub_task, args.model_tag)
+    bs, lr, src_len, trg_len, patience, epoch = get_args_by_task_model(args.task, args.sub_task, args.model_tag, args.train_lang)
     if args.epoch != 0:
         epoch = args.epoch
     if args.batch_size != 0:
