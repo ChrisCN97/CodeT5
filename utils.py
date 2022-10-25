@@ -182,13 +182,35 @@ def get_summarize_filenames(args):
         if args.train_lang == 'cs-java':
             train_fn = '{}/train.java-cs.txt.cs,{}/train.java-cs.txt.java'.format(data_dir, data_dir)
             dev_fn = '{}/valid.java-cs.txt.cs,{}/valid.java-cs.txt.java'.format(data_dir, data_dir)
-        else:
+        elif args.train_lang == 'java-cs':
             train_fn = '{}/train.java-cs.txt.java,{}/train.java-cs.txt.cs'.format(data_dir, data_dir)
             dev_fn = '{}/valid.java-cs.txt.java,{}/valid.java-cs.txt.cs'.format(data_dir, data_dir)
+        elif args.train_lang == 'java-go':
+            train_fn = '{}/leetcodeData/java-go.java,{}/leetcodeData/java-go.go'.format(data_dir, data_dir)
+            dev_fn = '{}/leetcodeData/java-go.java,{}/leetcodeData/java-go.go'.format(data_dir, data_dir)
+        elif args.train_lang == 'go-java':
+            train_fn = '{}/leetcodeData/java-go.go,{}/leetcodeData/java-go.java'.format(data_dir, data_dir)
+            dev_fn = '{}/leetcodeData/java-go.go,{}/leetcodeData/java-go.java'.format(data_dir, data_dir)
+        elif args.train_lang == 'python-go':
+            train_fn = '{}/leetcodeData/python-go.python,{}/leetcodeData/python-go.go'.format(data_dir, data_dir)
+            dev_fn = '{}/leetcodeData/python-go.python,{}/leetcodeData/python-go.go'.format(data_dir, data_dir)
+        elif args.train_lang == 'go-python':
+            train_fn = '{}/leetcodeData/python-go.go,{}/leetcodeData/python-go.python'.format(data_dir, data_dir)
+            dev_fn = '{}/leetcodeData/python-go.go,{}/leetcodeData/python-go.python'.format(data_dir, data_dir)
+
         if args.test_lang == 'cs-java':
             test_fn = '{}/test.java-cs.txt.cs,{}/test.java-cs.txt.java'.format(data_dir, data_dir)
-        else:
+        elif args.test_lang == 'java-cs':
             test_fn = '{}/test.java-cs.txt.java,{}/test.java-cs.txt.cs'.format(data_dir, data_dir)
+        elif args.test_lang == 'java-go':
+            test_fn = '{}/leetcodeData/java-go.java,{}/leetcodeData/java-go.go'.format(data_dir, data_dir)
+        elif args.test_lang == 'go-java':
+            test_fn = '{}/leetcodeData/java-go.go,{}/leetcodeData/java-go.java'.format(data_dir, data_dir)
+        elif args.test_lang == 'python-go':
+            test_fn = '{}/leetcodeData/python-go.python,{}/leetcodeData/python-go.go'.format(data_dir, data_dir)
+        elif args.test_lang == 'go-python':
+            test_fn = '{}/leetcodeData/python-go.go,{}/leetcodeData/python-go.python'.format(data_dir, data_dir)
+
     elif args.task == 'concode':
         data_dir = '{}/{}'.format(args.data_dir, args.task)
         train_fn = '{}/train.json'.format(data_dir)

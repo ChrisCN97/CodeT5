@@ -140,34 +140,27 @@ if __name__ == "__main__":
     prompt_num_list = [5, 0]
     gpu_num = 2
     tasks = ["summarize", "translate", "concode", "refine"]
-    translate_langs = ["java-cs", "cs-java"]
+    translate_langs = ["java-cs", "cs-java", "java-go", "go-java", "python-go", "go-python"]
     refine_langs = ["small", "medium"]
 
-    task_list = TaskList(gpu_num, use_gpu=0)  # 0, 1
-    task = tasks[3]
+    task_list = TaskList(gpu_num, use_gpu=1)  # 0, 1
+    task = tasks[1]
     model = model_list[1]
-    train_lang = refine_langs[0]
-    data_num = 1000
+    train_lang = translate_langs[0]
+    data_num = 5000
     epoch = 10000
-    batch_size = 20
+    batch_size = 12
     freeze = False
-    for task in ["concode", "refine"]:
-        for prompt in [10, 0]:
-            task_list.add_task(
-                Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-                     prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, freeze=freeze,
-                     model_dir="model2"))
-    # for prompt in [8, 10, 12]:
-    #     task_list.add_task(
-    #         Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-    #              prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, freeze=freeze,
-    #              model_dir="model2"))
-    #     for test_lang in test_langs:
-    #         task_list.add_task(
-    #             Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
-    #                  prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
-    #                  model_dir="model2"))
+    for prompt in [50, 0]:
+        task_list.add_task(
+            Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang="java-cs",
+                 prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
+                 model_dir="model2"))
+        task_list.add_task(
+            Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang="java-go",
+                 prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
+                 model_dir="model2"))
     task_list.generate_cmd()
     # Best ppl
     # Finish and take
-    # 1359817 1356583
+    # 2153281
