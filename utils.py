@@ -172,7 +172,7 @@ def load_and_cache_multi_gen_data(args, pool, tokenizer, split_tag, only_src=Fal
 
 
 def get_summarize_filenames(args):
-    if args.task == 'summarize':
+    if args.task == 'summarize' or args.task == 'nlpl':
         train_data_dir = '{}/summarize/{}'.format(args.data_dir, args.train_lang)
         train_fn = '{}/train.jsonl'.format(train_data_dir)
         dev_fn = '{}/valid.jsonl'.format(train_data_dir)
@@ -277,6 +277,7 @@ def read_examples(filename, data_num, task):
         'concode': read_concode_examples,
         'clone': read_clone_examples,
         'defect': read_defect_examples,
+        'nlpl': read_nlpl_examples,
     }
     return read_example_dict[task](filename, data_num)
 

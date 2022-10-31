@@ -134,33 +134,30 @@ class TaskList:
 
 if __name__ == "__main__":
     model_list = ["codebert", "codet5_base"]
-    sum_langs = ["java", "python", "go", "ruby", "javascript", "php"]
+    sum_langs = ["java", "python", "go", "ruby", "javascript", "php", "solidity"]
     test_langs = ["python", "go", "ruby", "javascript", "php"]
     size = [5000]
     prompt_num_list = [5, 0]
     gpu_num = 2
-    tasks = ["summarize", "translate", "concode", "refine"]
+    tasks = ["summarize", "translate", "concode", "refine", "nlpl"]
     translate_langs = ["java-cs", "cs-java", "java-go", "go-java", "python-go", "go-python"]
     refine_langs = ["small", "medium"]
 
     task_list = TaskList(gpu_num, use_gpu=1)  # 0, 1
-    task = tasks[1]
+    task = tasks[-1]
     model = model_list[1]
-    train_lang = translate_langs[0]
-    data_num = 5000
+    train_lang = "java"
+    data_num = 'test'
     epoch = 10000
-    batch_size = 12
+    batch_size = 20
     freeze = False
-    for prompt in [50, 0]:
-        task_list.add_task(
-            Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang="java-cs",
-                 prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
-                 model_dir="model2"))
-        task_list.add_task(
-            Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang="java-go",
-                 prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
-                 model_dir="model2"))
+
+    task_list.add_task(
+        Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang="java",
+             prompt_num=10, epoch=epoch, batch_size=batch_size, need_train=True, freeze=freeze,
+             model_dir="model2"))
+
     task_list.generate_cmd()
     # Best ppl
     # Finish and take
-    # 2153281
+    # 2161659

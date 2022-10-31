@@ -255,6 +255,30 @@ def read_summarize_examples(filename, data_num):
                 break
     return examples
 
+def read_nlpl_examples(filename, data_num):
+    """Read examples from filename."""
+    examples = []
+    with open(filename, encoding="utf-8") as f:
+        for idx, line in enumerate(f):
+            line = line.strip()
+            js = json.loads(line)
+            if 'idx' not in js:
+                js['idx'] = idx
+            code = ' '.join(js['code_tokens']).replace('\n', ' ')
+            code = ' '.join(code.strip().split())
+            nl = ' '.join(js['docstring_tokens']).replace('\n', '')
+            nl = ' '.join(nl.strip().split())
+            examples.append(
+                Example(
+                    idx=idx,
+                    source=nl,
+                    target=code,
+                )
+            )
+            if idx + 1 == data_num:
+                break
+    return examples
+
 
 def read_defect_examples(filename, data_num):
     """Read examples from filename."""
