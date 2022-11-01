@@ -152,11 +152,17 @@ if __name__ == "__main__":
     batch_size = 20
     freeze = False
 
-    for prompt in [1,3,5,7,9,11,13,15,17,50,100]:
-        task_list.add_task(
-            Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-                 prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, freeze=freeze,
-                 model_dir="model2"))
+    # task_list.add_task(
+    #     Task(model=model, task=task, train_lang="java", data_num="test", test_lang="solidity",
+    #          prompt_num=10, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
+    #          model_dir="model2"))
+
+    for prompt in [9,11,13,15,17,50,100]:
+        if prompt != 9:
+            task_list.add_task(
+                Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
+                     prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, freeze=freeze,
+                     model_dir="model2"))
         for test_lang in sum_langs[1:]:
             task_list.add_task(
                 Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
@@ -166,4 +172,4 @@ if __name__ == "__main__":
     task_list.generate_cmd()
     # Best ppl
     # Finish and take
-    # 2414561
+    # 2444558
