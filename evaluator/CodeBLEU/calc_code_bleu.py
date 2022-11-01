@@ -9,6 +9,11 @@ from evaluator.CodeBLEU import bleu, weighted_ngram_match, syntax_match, dataflo
 
 
 def get_codebleu(refs, hyp, lang, params='0.25,0.25,0.25,0.25'):
+    if lang == 'javascript':
+        lang = 'js'
+    if lang not in ['java', 'js', 'c_sharp', 'php', 'go', 'python', 'ruby']:
+        return 0
+
     if not isinstance(refs, list):
         refs = [refs]
     alpha, beta, gamma, theta = [float(x) for x in params.split(',')]

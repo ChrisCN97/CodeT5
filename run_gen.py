@@ -159,7 +159,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
         else:
             bleu = round(_bleu(gold_fn, output_fn), 2)
             if args.task in ['concode', 'translate', 'refine', 'nlpl']:
-                codebleu = calc_code_bleu.get_codebleu(gold_fn, output_fn, args.lang)
+                codebleu = calc_code_bleu.get_codebleu(gold_fn, output_fn, args.test_lang)
 
         result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu, 'rouge-l': rouge_l}
         if args.task in ['concode', 'translate', 'refine', 'nlpl']:
