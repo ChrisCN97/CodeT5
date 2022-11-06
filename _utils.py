@@ -146,6 +146,9 @@ class Example(object):
         self.task = task
         self.sub_task = sub_task
 
+    def add_prefix_to_source(self, prefix):
+        self.source = prefix + self.source
+
 
 class CloneExample(object):
     """A single training/test example."""

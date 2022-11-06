@@ -1,0 +1,18 @@
+python run_t5_mlm_flax.py \
+	--output_dir="pretrain/codet5-with-lang-v1" \
+	--model_type="codet5" \
+	--config_name="Salesforce/codet5-base" \
+	--tokenizer_name="Salesforce/codet5-base" \
+	--train_file "/mnt/sda/cn/codet5/data/pretrain/with_lang/v1/train.txt" \
+    --validation_file "/mnt/sda/cn/codet5/data/pretrain/with_lang/v1/val.txt" \
+	--max_seq_length="512" \
+	--per_device_train_batch_size="32" \
+	--per_device_eval_batch_size="32" \
+	--adafactor \
+	--learning_rate="0.005" \
+	--weight_decay="0.001" \
+	--overwrite_output_dir \
+	--warmup_steps="2000" \
+	--logging_steps="500" \
+	--save_steps="10000" \
+	--eval_steps="2500"

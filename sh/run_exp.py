@@ -4,12 +4,12 @@ import argparse
 
 
 def get_cmd(task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch, warmup,
-            model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train, freeze,
+            model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train, freeze, add_prefix,
             max_steps=None, save_steps=None, log_steps=None):
     if max_steps is None:
-        cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %s %s %d %s %d' % \
+        cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %s %s %d %s %d %d' % \
                   (task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch,
-                   warmup, model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train, freeze)
+                   warmup, model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train, freeze, add_prefix)
     else:
         cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %d %d %d' % \
                   (task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch,
@@ -121,7 +121,7 @@ def run_one_exp(args):
                       patience=patience, epoch=epoch, warmup=1000,
                       model_dir=args.model_dir, summary_dir=args.summary_dir,
                       train_lang=args.train_lang, test_lang=args.test_lang, prompt_num=args.prompt_num,
-                      need_train=args.need_train, freeze=args.freeze,
+                      need_train=args.need_train, freeze=args.freeze, add_prefix=args.add_prefix,
                       res_fn='{}/{}_{}.txt'.format(args.res_dir, args.task, args.model_tag))
     print('%s\n' % cmd_str)
     os.system(cmd_str)
@@ -161,8 +161,7 @@ def get_sub_tasks(task):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model_tag", type=str, default='codet5_base',
-                        choices=['roberta', 'codebert', 'bart_base', 'codet5_small', 'codet5_base', 'codet5_large'])
+    parser.add_argument("--model_tag", type=str, default='codet5_base')
     parser.add_argument("--task", type=str, default='summarize', choices=['summarize', 'concode', 'translate',
                                                                           'refine', 'defect', 'clone', 'multi_task', 'nlpl'])
     parser.add_argument("--sub_task", type=str, default='ruby')
@@ -179,6 +178,7 @@ if __name__ == '__main__':
     parser.add_argument("--prompt_num", type=int, default=0)
     parser.add_argument("--need_train", action='store_true')
     parser.add_argument("--freeze", type=int, default=0)
+    parser.add_argument("--add_prefix", type=int, default=0)
 
     args = parser.parse_args()
 

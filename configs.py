@@ -102,6 +102,7 @@ def add_args(parser):
     parser.add_argument("--test_lang", type=str, default='')
     parser.add_argument("--prompt_num", type=int, default=0)
     parser.add_argument("--freeze", type=int, default=0)
+    parser.add_argument("--add_prefix", type=int, default=0)
 
     args = parser.parse_args()
 

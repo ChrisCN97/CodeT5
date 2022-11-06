@@ -21,6 +21,10 @@ def load_and_cache_gen_data(args, filename, pool, tokenizer, split_tag, only_src
 
     examples = read_examples(filename, args.data_num, args.task)
 
+    if args.add_prefix == 1:
+        for example in examples:
+            example.add_prefix_to_source("output language {} . ".format(args.test_lang))
+
     if is_sample:
         examples = random.sample(examples, min(5000, len(examples)))
     if split_tag == 'train':

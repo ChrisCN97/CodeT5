@@ -80,7 +80,7 @@ def eval_ppl_epoch(args, eval_data, eval_examples, model, tokenizer):
     return eval_ppl
 
 
-def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag, criteria):
+def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag, criteria, is_eval=False):
     logger.info("  ***** Running bleu evaluation on {} data*****".format(split_tag))
     logger.info("  Num examples = %d", len(eval_examples))
     logger.info("  Batch size = %d", args.eval_batch_size)
@@ -158,7 +158,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
 
         else:
             bleu = round(_bleu(gold_fn, output_fn), 2)
-            if args.task in ['concode', 'translate', 'refine', 'nlpl']:
+            if not is_eval and args.task in ['concode', 'translate', 'refine', 'nlpl']:
                 codebleu = calc_code_bleu.get_codebleu(gold_fn, output_fn, args.test_lang)
 
         result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu, 'rouge-l': rouge_l}
@@ -332,7 +332,8 @@ def main():
                     eval_examples, eval_data = load_and_cache_gen_data(args, args.dev_filename, pool, tokenizer, 'dev',
                                                                        only_src=True, is_sample=True)
 
-                    result = eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, 'dev', 'e%d' % cur_epoch)
+                    result = eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, 'dev', 'e%d' % cur_epoch,
+                                             is_eval=True)
                     dev_bleu, dev_em = result['bleu'], result['em']
                     if args.task in ['summarize']:
                         dev_bleu_em = dev_bleu

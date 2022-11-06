@@ -21,6 +21,7 @@ test_lang=${17}
 prompt_num=${18}
 need_train=${19}
 freeze=${20}
+add_prefix=${21}
 
 if [[ $DATA_NUM == -1 ]]; then
   DATA_TAG='all'
@@ -72,6 +73,14 @@ elif [[ $MODEL_TAG == codet5_large ]]; then
   MODEL_TYPE=codet5
   TOKENIZER=Salesforce/codet5-large
   MODEL_PATH=Salesforce/codet5-large
+elif [[ $MODEL_TAG == test_mlm ]]; then
+  MODEL_TYPE=roberta
+  TOKENIZER=roberta-base
+  MODEL_PATH='../pretrain/test-mlm'
+elif [[ $MODEL_TAG == codebert-with-lang-v1 ]]; then
+  MODEL_TYPE=roberta
+  TOKENIZER=roberta-base
+  MODEL_PATH='../pretrain/codebert-with-lang-v1'
 fi
 
 
@@ -96,7 +105,7 @@ if [[ ${need_train} == 'True' ]]; then
     --cache_path ${CACHE_DIR}  --output_dir ${OUTPUT_DIR}  --summary_dir ${SUMMARY_DIR} \
     --save_last_checkpoints --always_save_model --res_dir ${RES_DIR} --res_fn ${RES_FN} \
     --train_batch_size ${BS} --eval_batch_size ${BS} --max_source_length ${SRC_LEN} --max_target_length ${TRG_LEN} \
-    --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} --freeze ${freeze} \
+    --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} --freeze ${freeze} --add_prefix ${add_prefix} \
     2>&1 | tee ${LOG}
 else
   CUDA_VISIBLE_DEVICES=${GPU} \
@@ -108,6 +117,6 @@ else
     --cache_path ${CACHE_DIR}  --output_dir ${OUTPUT_DIR}  --summary_dir ${SUMMARY_DIR} \
     --save_last_checkpoints --always_save_model --res_dir ${RES_DIR} --res_fn ${RES_FN} \
     --train_batch_size ${BS} --eval_batch_size ${BS} --max_source_length ${SRC_LEN} --max_target_length ${TRG_LEN} \
-    --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} --freeze ${freeze} \
+    --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} --freeze ${freeze} --add_prefix ${add_prefix} \
     2>&1 | tee ${LOG}
 fi

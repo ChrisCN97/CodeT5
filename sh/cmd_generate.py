@@ -12,7 +12,8 @@ class Task:
                  batch_size,
                  need_train,
                  freeze=False,
-                 model_dir="model"):
+                 model_dir="model",
+                 add_prefix=False):
         self.model = model
         self.task = task
         self.train_lang = train_lang
@@ -30,6 +31,10 @@ class Task:
             self.freeze = 1
         else:
             self.freeze = 0
+        if add_prefix:
+            self.add_prefix = 1
+        else:
+            self.add_prefix = 0
 
     def decide_gpu(self, id):
         self.gpu = id
@@ -61,6 +66,7 @@ class Task:
         if self.need_train:
             cmd += " --need_train"
         cmd += " --freeze {}".format(self.freeze)
+        cmd += " --add_prefix {}".format(self.add_prefix)
         return cmd
 
 
@@ -133,7 +139,7 @@ class TaskList:
 
 
 if __name__ == "__main__":
-    model_list = ["codebert", "codet5_base"]
+    model_list = ["codebert", "codet5_base", "test_mlm", "codebert-with-lang-v1"]
     sum_langs = ["java", "python", "go", "ruby", "javascript", "php", "solidity"]
     test_langs = ["python", "go", "ruby", "javascript", "php"]
     size = [5000]
@@ -143,33 +149,29 @@ if __name__ == "__main__":
     translate_langs = ["java-cs", "cs-java", "java-go", "go-java", "python-go", "go-python"]
     refine_langs = ["small", "medium"]
 
-    task_list = TaskList(gpu_num, use_gpu=1)  # 0, 1
-    task = tasks[-1]
-    model = model_list[1]
+    task_list = TaskList(gpu_num, use_gpu=0)  # 0, 1
+    task = tasks[0]
+    model = model_list[3]
     train_lang = "java"
     data_num = 1000
     epoch = 10000
     batch_size = 20
     freeze = False
+    add_prefix = True
 
-    # task_list.add_task(
-    #     Task(model=model, task=task, train_lang="java", data_num="test", test_lang="solidity",
-    #          prompt_num=10, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
-    #          model_dir="model2"))
+    task_list.add_task(
+        Task(model=model, task=task, train_lang="java", data_num="test", test_lang="java",
+             prompt_num=10, epoch=epoch, batch_size=batch_size, need_train=True, freeze=freeze, add_prefix=add_prefix,
+             model_dir="model2"))
 
-    for prompt in [9,11,13,15,17,50,100]:
-        if prompt != 9:
-            task_list.add_task(
-                Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-                     prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, freeze=freeze,
-                     model_dir="model2"))
-        for test_lang in sum_langs[1:]:
-            task_list.add_task(
-                Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
-                     prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
-                     model_dir="model2"))
+    # for prompt in [9]:
+    #     for test_lang in sum_langs:
+    #         task_list.add_task(
+    #             Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
+    #                  prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, freeze=freeze,
+    #                  model_dir="model2"))
 
     task_list.generate_cmd()
     # Best ppl
     # Finish and take
-    # 2444558
+    # 2472745
