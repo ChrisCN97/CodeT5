@@ -81,6 +81,10 @@ elif [[ $MODEL_TAG == codebert-with-lang-v1 ]]; then
   MODEL_TYPE=roberta
   TOKENIZER=roberta-base
   MODEL_PATH='../pretrain/codebert-with-lang-v1'
+elif [[ $MODEL_TAG == codet5-with-lang-v1 ]]; then
+  MODEL_TYPE=codet5
+  TOKENIZER=Salesforce/codet5-base
+  MODEL_PATH='../pretrain/codet5-with-lang-v1'
 fi
 
 

@@ -34,7 +34,10 @@ def build_or_load_gen_model(args):
                         beam_size=args.beam_size, max_length=args.max_target_length,
                         sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id, prompt_num=args.prompt_num)
     else:
-        model = model_class.from_pretrained(args.model_name_or_path)
+        if args.add_prefix == 1:
+            model = model_class.from_pretrained(args.model_name_or_path, from_flax=True)
+        else:
+            model = model_class.from_pretrained(args.model_name_or_path)
         add_num = add_prompt_for_t5(args, model, tokenizer)  # todo cuinan: add prompt into t5
 
     logger.info("Finish loading model [%s] from %s, add prompt: %d", get_model_size(model), args.model_name_or_path, add_num)

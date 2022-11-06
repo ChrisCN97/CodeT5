@@ -66,7 +66,8 @@ def src2with_lang_v1(trg_folder, train_num, val_num):
         f.write("".join(codes[total-val_num:]))
 
 if __name__ == "__main__":
-    trg_folder = "/mnt/sda/cn/codet5/data/pretrain/with_lang/v1/"
-    train_num = 100000
-    val_num = 5000
+    # trg_folder = "/mnt/sda/cn/codet5/data/pretrain/with_lang/v1/"
+    trg_folder = "/mnt/sda/cn/codet5/data/pretrain/test/"
+    train_num = 5000
+    val_num = 500
     src2with_lang_v1(trg_folder, train_num, val_num)
