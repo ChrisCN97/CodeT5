@@ -35,7 +35,7 @@ def get_args_by_task_model(task, sub_task, model_tag, train_lang):
         src_len = 256
         trg_len = 128
         epoch = 15
-        patience = 2
+        patience = 20
     elif task == 'nlpl':
         # ruby: Read 24927 examples, avg src len: 66, avg trg len: 12, max src len: 501, max trg len: 146
         # [TOKENIZE] avg src len: 100, avg trg len: 13, max src len: 1250, max trg len: 161
@@ -46,7 +46,7 @@ def get_args_by_task_model(task, sub_task, model_tag, train_lang):
         src_len = 128
         trg_len = 256
         epoch = 15
-        patience = 2
+        patience = 20
     elif task == 'refine':
         # small: Read 46680 examples, avg src len: 31, avg trg len: 28, max src len: 50, max trg len: 50
         # [TOKENIZE] avg src len: 50, avg trg len: 45, max src len: 129, max trg len: 121

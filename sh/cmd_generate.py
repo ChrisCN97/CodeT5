@@ -40,15 +40,14 @@ class Task:
         self.gpu = id
 
     def calc_time(self):
-        rounds = self.data_num * self.epoch // self.batch_size
-        time = 0
-        if not self.need_train:
-            return 3*60
-        if self.model == "codet5_base":
-            time = rounds * 1.13
-        elif self.model == "codebert":
-            time = rounds * 3.6
-        return int(time)
+        time = 0.0
+        if self.need_train:
+            time += 1.1 * self.epoch
+        if self.task == 'nlpl':
+            time += 11
+        if self.task == 'summarize':
+            time += 1
+        return int(time*60)
 
     def gen_cmd(self):
         cmd = "python run_exp.py"
@@ -119,7 +118,7 @@ class TaskList:
             task_list.append(task)
         m, s = divmod(gpu_time, 60)
         h, m = divmod(m, 60)
-        # print("time predict: {}:{}:{}".format(h, m, s))
+        print("time predict: {}:{}:{}".format(h, m, s))
         tasks_cmd = ""
         for task in task_list:
             tasks_cmd += task.gen_cmd() + "\n"
@@ -140,7 +139,9 @@ class TaskList:
 
 if __name__ == "__main__":
     model_list = ["codebert", "codet5_base", "test_mlm", "codebert-with-lang-v1", "codet5-with-lang-v1"]
-    sum_langs = ["java", "python", "go", "ruby", "javascript", "php", "solidity"]
+    base_model_list = ["roberta", "roberta-large", "codeberta"]
+    sum_langs_backup = ["java", "python", "go", "ruby", "javascript", "php", "solidity"]
+    sum_langs = ["solidity", "go", "ruby", "javascript", "php"]
     size = [5000]
     prompt_num_list = [5, 0]
     gpu_num = 2
@@ -148,58 +149,71 @@ if __name__ == "__main__":
     translate_langs = ["java-cs", "cs-java", "java-go", "go-java", "python-go", "go-python"]
     refine_langs = ["small", "medium"]
 
-    task_list = TaskList(gpu_num, use_gpu=0)  # 0, 1
-    task = tasks[0]
-    model = model_list[4]
-    train_lang = "java"
-    data_num = 1000
-    epoch = 10000
-    batch_size = 20
+    task_list = TaskList(gpu_num, use_gpu=1)  # 0, 1
     freeze = False
-    add_prefix = True
 
-    # task_list.add_task(
-    #     Task(model=model, task=task, train_lang="java", data_num="test", test_lang="java",
-    #          prompt_num=10, epoch=epoch, batch_size=batch_size, need_train=True, freeze=freeze, add_prefix=add_prefix,
-    #          model_dir="model2"))
-
-    # new codet5 in nl2pl
-    model = model_list[4]
-    task = tasks[4]
+    # 0
     train_lang = "java"
-    data_num = 1000
-    epoch = 10000
+    data_num = 5000
     batch_size = 20
+    prompt = 0
+    task = "nlpl"
     add_prefix = True
-    prompt = 15
+    model = "roberta-large"
+    # epoch = 5
+    # task_list.add_task(
+    #     Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
+    #          prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, add_prefix=add_prefix,
+    #          model_dir="model2"))
+    # for test_lang in sum_langs:
+    #     task_list.add_task(
+    #         Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
+    #              prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, add_prefix=add_prefix,
+    #              model_dir="model2"))
+    #
+    # task = "summarize"
+    # add_prefix = False
+    epoch = 15
+    # for model in base_model_list:
+    #     for test_lang in sum_langs:
+    #         task_list.add_task(
+    #             Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
+    #                  prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, add_prefix=add_prefix,
+    #                  model_dir="model2"))
+    #
+    # model = "codebert"
+    # for prompt in [0, 10]:
+    #     task_list.add_task(
+    #         Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
+    #              prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, add_prefix=add_prefix,
+    #              model_dir="model2"))
+    #     for test_lang in sum_langs:
+    #         task_list.add_task(
+    #             Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
+    #                  prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, add_prefix=add_prefix,
+    #                  model_dir="model2"))
+    #
+    task = "nlpl"
+    add_prefix = True
+    # model = "codebert"
+    # for prompt in [0, 10]:
+    #     for test_lang in sum_langs:
+    #         task_list.add_task(
+    #             Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
+    #                  prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, add_prefix=add_prefix,
+    #                  model_dir="model2"))
 
-    task_list.add_task(
-        Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-             prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, add_prefix=add_prefix,
-             model_dir="model2"))
-    for test_lang in sum_langs[1:]:
-        task_list.add_task(
-            Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
-                 prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, add_prefix=add_prefix,
-                 model_dir="model2"))
-
-    # epoch=5
-    epoch = 5
-    model = model_list[1]
-    task = tasks[4]
-
-    task_list.add_task(
-        Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-             prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=True, add_prefix=add_prefix,
-             model_dir="model2"))
-    for test_lang in sum_langs[1:]:
-        task_list.add_task(
-            Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
-                 prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, add_prefix=add_prefix,
-                 model_dir="model2"))
+    # 1
+    prompt = 0
+    for model in base_model_list:
+        for test_lang in sum_langs:
+            task_list.add_task(
+                Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=test_lang,
+                     prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=False, add_prefix=add_prefix,
+                     model_dir="model2"))
 
 
     task_list.generate_cmd()
     # Best ppl
     # Finish and take
-    # 2575505
+    # 2864374 2864323

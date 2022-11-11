@@ -23,7 +23,7 @@ def load_and_cache_gen_data(args, filename, pool, tokenizer, split_tag, only_src
 
     if args.add_prefix == 1:
         for example in examples:
-            example.add_prefix_to_source("output language {} . ".format(args.test_lang))
+            example.add_prefix_to_source("<{}> ".format(args.test_lang))  # todo cuinan: add task prefix
 
     if is_sample:
         examples = random.sample(examples, min(5000, len(examples)))

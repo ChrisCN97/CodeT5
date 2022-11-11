@@ -34,7 +34,7 @@ def build_or_load_gen_model(args):
                         beam_size=args.beam_size, max_length=args.max_target_length,
                         sos_id=tokenizer.cls_token_id, eos_id=tokenizer.sep_token_id, prompt_num=args.prompt_num)
     else:
-        if args.add_prefix == 1:
+        if args.model_tag == "codet5-with-lang-v1":
             model = model_class.from_pretrained(args.model_name_or_path, from_flax=True)
         else:
             model = model_class.from_pretrained(args.model_name_or_path)

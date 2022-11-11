@@ -660,7 +660,16 @@ def main():
     # Otherwise, we tokenize every text, then concatenate them together before splitting them in smaller parts.
     # Since we make sure that all sequences are of the same length, no attention_mask is needed.
     def tokenize_function(examples):
-        return tokenizer(examples[text_column_name], return_attention_mask=False)
+        # Remove empty lines
+        examples[text_column_name] = [
+            line for line in examples[text_column_name] if len(line) > 0 and not line.isspace()
+        ]
+        return tokenizer(
+            examples[text_column_name],
+            padding="max_length",
+            truncation=True,
+            max_length=max_seq_length,
+        )
 
     tokenized_datasets = datasets.map(
         tokenize_function,

@@ -136,7 +136,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
         with open(output_fn, 'w') as f, open(gold_fn, 'w') as f1, open(src_fn, 'w') as f2:
             for pred_nl, gold in zip(pred_nls, eval_examples):
                 dev_accs.append(pred_nl.strip() == gold.target.strip())
-                if args.task in ['summarize']:
+                if args.task in ['summarize', 'nlpl']:
                     # for smooth-bleu4 evaluation
                     predictions.append(str(gold.idx) + '\t' + pred_nl)
                     f.write(str(gold.idx) + '\t' + pred_nl.strip() + '\n')
@@ -147,7 +147,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
                     f1.write(gold.target.strip() + '\n')
                     f2.write(gold.source.strip() + '\n')
 
-        if args.task == 'summarize':
+        if args.task == 'summarize' or args.task == 'nlpl':
             (goldMap, predictionMap) = smooth_bleu.computeMaps(predictions, gold_fn)
             bleu = round(smooth_bleu.bleuFromMaps(goldMap, predictionMap)[0], 2)
             # compute rouge
@@ -158,12 +158,11 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
 
         else:
             bleu = round(_bleu(gold_fn, output_fn), 2)
-            if not is_eval and args.task in ['concode', 'translate', 'refine', 'nlpl']:
-                codebleu = calc_code_bleu.get_codebleu(gold_fn, output_fn, args.test_lang)
 
-        result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu, 'rouge-l': rouge_l}
         if args.task in ['concode', 'translate', 'refine', 'nlpl']:
-            result['codebleu'] = codebleu * 100
+            codebleu = calc_code_bleu.get_codebleu(gold_fn, output_fn, args.test_lang)
+
+        result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu, 'rouge-l': rouge_l, 'codebleu': codebleu * 100}
 
     logger.info("***** Eval results *****")
     for key in sorted(result.keys()):
@@ -385,18 +384,18 @@ def main():
         logger.info("  Batch size = %d", args.eval_batch_size)
 
         for criteria in ['best-bleu']:
-            file = os.path.join(args.output_dir, 'checkpoint-{}/pytorch_model.bin'.format(criteria))
+            file = os.path.join(args.output_dir, 'checkpoint-last/pytorch_model.bin'.format(criteria))
             logger.info("Reload model from {}".format(file))
             model.load_state_dict(torch.load(file))
             eval_examples, eval_data = load_and_cache_gen_data(args, args.test_filename, pool, tokenizer, 'test',
                                                                only_src=True, is_sample=False)
             result = eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, 'test', criteria)
-            test_bleu, test_em = result['bleu'], result['em']
+            test_bleu, test_em, test_rougel = result['bleu'], result['em'], result['rouge-l']
             test_codebleu = result['codebleu'] if 'codebleu' in result else 0
             # Compute ROUGE scores
             # rouge_calculator = Rouge()
             # rouge_l, ind_rouge = rouge_calculator.compute_score(eval_data, eval_examples)
-            result_str = "[%s] bleu-4: %.2f, em: %.4f, codebleu: %.4f\n" % (criteria, test_bleu, test_em, test_codebleu)
+            result_str = "[%s] bleu-4: %.2f, codebleu: %.4f, rouge-L: %.4f\n" % (criteria, test_bleu, test_codebleu, test_rougel)
             logger.info(result_str)
             fa.write(result_str)
             if args.res_fn:

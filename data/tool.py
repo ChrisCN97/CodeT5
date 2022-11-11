@@ -65,9 +65,28 @@ def src2with_lang_v1(trg_folder, train_num, val_num):
     with open(trg_folder + "val.txt", 'w') as f:
         f.write("".join(codes[total-val_num:]))
 
+def minimize(file, size):
+    examples = []
+    with open(file+".backup", encoding="utf-8") as f:
+        for line in f:
+            examples.append(line)
+    random.shuffle(examples)
+    with open(file, 'w') as f:
+        f.write("".join(examples[:size]))
+
+def min_summarize():
+    root = "/mnt/sda/cn/codet5/data/summarize/"
+    langs = ["java", "python", "go", "ruby", "javascript", "php", "solidity"]
+    for lang in langs:
+        file = os.path.join(root, lang, "valid.jsonl")
+        minimize(file, 300)
+        file = os.path.join(root, lang, "test.jsonl")
+        minimize(file, 500)
+
 if __name__ == "__main__":
     # trg_folder = "/mnt/sda/cn/codet5/data/pretrain/with_lang/v1/"
-    trg_folder = "/mnt/sda/cn/codet5/data/pretrain/test/"
-    train_num = 5000
-    val_num = 500
-    src2with_lang_v1(trg_folder, train_num, val_num)
+    # trg_folder = "/mnt/sda/cn/codet5/data/pretrain/test/"
+    # train_num = 5000
+    # val_num = 500
+    # src2with_lang_v1(trg_folder, train_num, val_num)
+    min_summarize()

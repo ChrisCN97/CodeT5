@@ -103,6 +103,7 @@ def add_args(parser):
     parser.add_argument("--prompt_num", type=int, default=0)
     parser.add_argument("--freeze", type=int, default=0)
     parser.add_argument("--add_prefix", type=int, default=0)
+    parser.add_argument("--model_tag", type=str, default='')
 
     args = parser.parse_args()
 
