@@ -104,6 +104,8 @@ def add_args(parser):
     parser.add_argument("--freeze", type=int, default=0)
     parser.add_argument("--add_prefix", type=int, default=0)
     parser.add_argument("--model_tag", type=str, default='')
+    parser.add_argument("--continue_train_lang", type=str, default='')
+    parser.add_argument("--continue_train_size", type=int, default=0)
 
     args = parser.parse_args()
 

@@ -162,7 +162,7 @@ def eval_bleu_epoch(args, eval_data, eval_examples, model, tokenizer, split_tag,
         if args.task in ['concode', 'translate', 'refine', 'nlpl']:
             codebleu = calc_code_bleu.get_codebleu(gold_fn, output_fn, args.test_lang)
 
-        result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu, 'rouge-l': rouge_l, 'codebleu': codebleu * 100}
+        result = {'em': np.mean(dev_accs) * 100, 'bleu': bleu, 'rouge-l': rouge_l*100, 'codebleu': codebleu * 100}
 
     logger.info("***** Eval results *****")
     for key in sorted(result.keys()):
@@ -384,7 +384,7 @@ def main():
         logger.info("  Batch size = %d", args.eval_batch_size)
 
         for criteria in ['best-bleu']:
-            file = os.path.join(args.output_dir, 'checkpoint-last/pytorch_model.bin'.format(criteria))
+            file = os.path.join(args.output_dir, 'checkpoint-last/pytorch_model.bin')
             logger.info("Reload model from {}".format(file))
             model.load_state_dict(torch.load(file))
             eval_examples, eval_data = load_and_cache_gen_data(args, args.test_filename, pool, tokenizer, 'test',

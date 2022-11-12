@@ -22,6 +22,8 @@ prompt_num=${18}
 need_train=${19}
 freeze=${20}
 add_prefix=${21}
+ctl=${22}
+cts=${23}
 
 if [[ $DATA_NUM == -1 ]]; then
   DATA_TAG='all'
@@ -118,7 +120,7 @@ if [[ ${need_train} == 'True' ]]; then
     --save_last_checkpoints --always_save_model --res_dir ${RES_DIR} --res_fn ${RES_FN} \
     --train_batch_size ${BS} --eval_batch_size ${BS} --max_source_length ${SRC_LEN} --max_target_length ${TRG_LEN} \
     --train_lang ${train_lang} --test_lang ${test_lang} --prompt_num ${prompt_num} --freeze ${freeze} \
-    --add_prefix ${add_prefix} --model_tag ${MODEL_TAG} \
+    --add_prefix ${add_prefix} --model_tag ${MODEL_TAG} --continue_train_lang ${ctl} --continue_train_size ${cts} \
     2>&1 | tee ${LOG}
 else
   CUDA_VISIBLE_DEVICES=${GPU} \

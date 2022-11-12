@@ -1,3 +1,5 @@
+import os
+
 import torch
 import torch.nn as nn
 import numpy as np
@@ -42,9 +44,12 @@ def build_or_load_gen_model(args):
 
     logger.info("Finish loading model [%s] from %s, add prompt: %d", get_model_size(model), args.model_name_or_path, add_num)
 
-    if args.load_model_path is not None:
-        logger.info("Reload model from {}".format(args.load_model_path))
-        model.load_state_dict(torch.load(args.load_model_path))
+    if args.continue_train_lang != '':
+        file = os.path.join(args.output_dir, 'checkpoint-last/pytorch_model.bin')
+        logger.info("Reload model from {}".format(file))
+        model.load_state_dict(torch.load(file))
+        args.output_dir += "_ctl{}_cts{}".format(args.continue_train_lang, args.continue_train_size)
+        os.makedirs(args.output_dir)
 
     return config, model, tokenizer
 

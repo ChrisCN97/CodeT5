@@ -5,11 +5,12 @@ import argparse
 
 def get_cmd(task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch, warmup,
             model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train, freeze, add_prefix,
-            max_steps=None, save_steps=None, log_steps=None):
+            continue_train_lang, continue_train_size, max_steps=None, save_steps=None, log_steps=None):
     if max_steps is None:
-        cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %s %s %d %s %d %d' % \
+        cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %s %s %d %s %d %d %s %d' % \
                   (task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch,
-                   warmup, model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train, freeze, add_prefix)
+                   warmup, model_dir, summary_dir, res_fn, train_lang, test_lang, prompt_num, need_train, freeze,
+                   add_prefix, continue_train_lang, continue_train_size)
     else:
         cmd_str = 'bash exp_with_args.sh %s %s %s %d %d %d %d %d %d %d %d %d %s %s %s %d %d %d' % \
                   (task, sub_task, model_tag, gpu, data_num, bs, lr, source_length, target_length, patience, epoch,
@@ -122,6 +123,7 @@ def run_one_exp(args):
                       model_dir=args.model_dir, summary_dir=args.summary_dir,
                       train_lang=args.train_lang, test_lang=args.test_lang, prompt_num=args.prompt_num,
                       need_train=args.need_train, freeze=args.freeze, add_prefix=args.add_prefix,
+                      continue_train_lang=args.continue_train_lang, continue_train_size=args.continue_train_size,
                       res_fn='{}/{}_{}.txt'.format(args.res_dir, args.task, args.model_tag))
     print('%s\n' % cmd_str)
     os.system(cmd_str)
@@ -179,6 +181,8 @@ if __name__ == '__main__':
     parser.add_argument("--need_train", action='store_true')
     parser.add_argument("--freeze", type=int, default=0)
     parser.add_argument("--add_prefix", type=int, default=0)
+    parser.add_argument("--continue_train_lang", type=str, default='')
+    parser.add_argument("--continue_train_size", type=int, default=0)
 
     args = parser.parse_args()
 
