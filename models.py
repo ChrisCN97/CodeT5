@@ -50,6 +50,8 @@ def build_or_load_gen_model(args):
         model.load_state_dict(torch.load(file))
         args.output_dir += "_ctl{}_cts{}".format(args.continue_train_lang, args.continue_train_size)
         os.makedirs(args.output_dir)
+        args.train_lang = args.continue_train_lang
+        args.data_num = args.continue_train_size
 
     return config, model, tokenizer
 

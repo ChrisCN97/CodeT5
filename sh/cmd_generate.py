@@ -159,47 +159,42 @@ if __name__ == "__main__":
     translate_langs = ["java-cs", "cs-java", "java-go", "go-java", "python-go", "go-python"]
     refine_langs = ["small", "medium"]
 
-    task_list = TaskList(gpu_num, use_gpu=1)  # 0, 1
+    task_list = TaskList(gpu_num, use_gpu=0)  # 0, 1
     freeze = False
     batch_size = 20
 
     # 0
-    # data_num = 5000
-    # epoch = 15
-    # prompt = 0
-    # task = "summarize"
-    # add_prefix = False
-    # for task in ["summarize", "nlpl"]:
-    #     for train_lang in ["java", "solidity", "go"]:
-    #         need_train = True
-    #         if train_lang == "java":
-    #             need_train = False
-    #         for model in base_model_list:
-    #             task_list.add_task(
-    #                 Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-    #                      prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=need_train, add_prefix=add_prefix,
-    #                      model_dir="model2"))
-    #         model = "codebert"
-    #         for prompt in [0, 10]:
-    #             task_list.add_task(
-    #                 Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
-    #                      prompt_num=prompt, epoch=epoch, batch_size=batch_size, need_train=need_train,
-    #                      add_prefix=add_prefix,
-    #                      model_dir="model2"))
+    data_num = 5000
+    epoch = 15
+    need_train = True
+    for task in ["summarize", "nlpl"]:
+        for train_lang in ["solidity", "go"]:
+            prompt = 0
+            for model in base_model_list:
+                task_list.add_task(
+                    Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
+                         prompt_num=prompt, epoch=epoch, need_train=need_train, model_dir="model2"))
+            model = "codebert"
+            for prompt in [0, 10]:
+                task_list.add_task(
+                    Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=train_lang,
+                         prompt_num=prompt, epoch=epoch, need_train=need_train, model_dir="model2"))
 
     # 1
-    model = "codebert"
-    task = "summarize"
-    train_lang = "java"
-    data_num = 1000
-    prompt = 0
-    epoch = 10
-    task_list.add_task(
-        Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang="Solidity",
-             prompt_num=prompt, epoch=epoch, need_train=True, model_dir="model2",
-             continue_train_lang="Solidity", continue_train_size=100))
+    # model = "codebert"
+    # train_lang = "java"
+    # data_num = 5000
+    # epoch = 15
+    # for lang in ["solidity", "go"]:
+    #     for task in ["summarize", "nlpl"]:
+    #         for cts in [500, 1000, 1500, 2000, 2500]:
+    #             for prompt in [0, 10]:
+    #                 task_list.add_task(
+    #                     Task(model=model, task=task, train_lang=train_lang, data_num=data_num, test_lang=lang,
+    #                          prompt_num=prompt, epoch=epoch, need_train=True, model_dir="model2",
+    #                          continue_train_lang=lang, continue_train_size=cts))
 
     task_list.generate_cmd()
     # Best ppl
     # Finish and take
-    # 2965377 2967458
+    # 2970659 2969878
